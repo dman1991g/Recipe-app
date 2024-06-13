@@ -35,7 +35,6 @@ header {
     margin: 1em;
     text-align: center;
     cursor: pointer;
-    font-size:16px;
 }
 
 .recipe-item img {
@@ -46,6 +45,7 @@ header {
 #recipe-details {
     padding: 1em;
     background-color: #f0f0f0;
+    font-size: 16px;
 }
 
 @media (max-width: 600px) {
