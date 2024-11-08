@@ -13,6 +13,12 @@ async function fetchRecipes(query) {
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
     recipeList.innerHTML = '';
+    
+    if (!recipes) {
+        recipeList.innerHTML = '<p>No recipes found. Please try another search.</p>';
+        return;
+    }
+    
     recipes.forEach(recipe => {
         const recipeItem = document.createElement('div');
         recipeItem.className = 'recipe-item';
@@ -34,7 +40,10 @@ function showRecipeDetails(recipe) {
         <ul>
             ${Object.keys(recipe)
                 .filter(key => key.startsWith('strIngredient') && recipe[key])
-                .map(key => `<li>${recipe[key]}</li>`)
+                .map(key => {
+                    const measureKey = key.replace('strIngredient', 'strMeasure');
+                    return `<li>${recipe[measureKey] || ''} ${recipe[key]}</li>`;
+                })
                 .join('')}
         </ul>
         <h3>Instructions</h3>
@@ -44,10 +53,10 @@ function showRecipeDetails(recipe) {
     document.getElementById('favorite-button').addEventListener('click', () => addToFavorites(recipe));
 }
 
-document.getElementById('search-form').addEventListener('submit', function(e) {
+document.getElementById('search-form').addEventListener('submit', async function(e) {
     e.preventDefault();
     const query = document.getElementById('search-input').value;
-    fetchRecipes(query);
+    await fetchRecipes(query);
 });
 
 function addToFavorites(recipe) {
