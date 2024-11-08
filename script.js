@@ -38,6 +38,7 @@ function displayRecipes(recipes) {
 function showRecipeDetails(recipe) {
     customAlert("Starting showRecipeDetails function for recipe: " + recipe.strMeal);
 
+    // Collect ingredients
     let ingredientsList = Object.keys(recipe)
         .filter(key => key.startsWith('strIngredient') && recipe[key])
         .map(key => `<li>${recipe[key]}</li>`)
@@ -48,6 +49,7 @@ function showRecipeDetails(recipe) {
         customAlert("No ingredients found for this recipe.");
     }
 
+    // Recipe details HTML content
     const recipeDetailsContent = `
         <h2>${recipe.strMeal}</h2>
         <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
@@ -57,10 +59,8 @@ function showRecipeDetails(recipe) {
         <p>${recipe.strInstructions || "No instructions available"}</p>
     `;
 
-    customAlert("Generated recipe details content: " + recipeDetailsContent);
-
     const recipeDetails = document.getElementById('recipe-details');
-    recipeDetails.innerHTML = recipeDetailsContent;
+    recipeDetails.innerHTML = recipeDetailsContent;  // Update the page
     customAlert("Showing details for: " + recipe.strMeal);
 }
 
@@ -87,37 +87,3 @@ function customAlert(message) {
         document.body.removeChild(alertBox);
     }, 3000);
 }
-
-function addToFavorites(recipe) {
-    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    if (!favorites.some(fav => fav.idMeal === recipe.idMeal)) {
-        favorites.push(recipe);
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        customAlert("Added to favorites!");
-    } else {
-        customAlert("This recipe is already in your favorites!");
-    }
-}
-
-function displayFavorites() {
-    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    const recipeList = document.getElementById('recipe-list');
-    recipeList.innerHTML = '';
-    
-    if (favorites.length > 0) {
-        favorites.forEach(recipe => {
-            const recipeItem = document.createElement('div');
-            recipeItem.className = 'recipe-item';
-            recipeItem.innerHTML = `
-                <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
-                <h3>${recipe.strMeal}</h3>
-            `;
-            recipeItem.addEventListener('click', () => showRecipeDetails(recipe));
-            recipeList.appendChild(recipeItem);
-        });
-    } else {
-        customAlert("No favorites found.");
-    }
-}
-
-document.getElementById('view-favorites').addEventListener('click', displayFavorites);
