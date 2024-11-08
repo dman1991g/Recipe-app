@@ -1,5 +1,4 @@
-const apiUrl = 'https://api.spoonacular.com/recipes/complexSearch?apiKey=65198bed37f2490e9ccae40a584a071e
-&query=';
+const apiUrl = 'https://api.spoonacular.com/recipes/complexSearch?apiKey=65198bed37f2490e9ccae40a584a071e&query=';
 
 async function fetchRecipes(query) {
     try {
