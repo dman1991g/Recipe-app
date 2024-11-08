@@ -4,7 +4,7 @@ async function fetchRecipes(query) {
     try {
         const response = await fetch(apiUrl + query);
         const data = await response.json();
-        displayRecipes(data.results);  // Adjust depending on the API's response structure
+        displayRecipes(data.results); // Ensure 'results' key is used correctly
     } catch (error) {
         console.error('Error fetching recipes:', error);
     }
@@ -12,7 +12,7 @@ async function fetchRecipes(query) {
 
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
-    recipeList.innerHTML = '';
+    recipeList.innerHTML = ''; // Clear previous search results
     recipes.forEach(recipe => {
         const recipeItem = document.createElement('div');
         recipeItem.className = 'recipe-item';
@@ -20,9 +20,22 @@ function displayRecipes(recipes) {
             <img src="${recipe.image}" alt="${recipe.title}">
             <h3>${recipe.title}</h3>
         `;
-        recipeItem.addEventListener('click', () => showRecipeDetails(recipe));
+        // Add click event to show details
+        recipeItem.addEventListener('click', () => fetchRecipeDetails(recipe.id));
         recipeList.appendChild(recipeItem);
     });
+}
+
+// Fetch recipe details from Spoonacular using the recipe ID
+async function fetchRecipeDetails(recipeId) {
+    const detailsUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apiKey=YOUR_API_KEY`;
+    try {
+        const response = await fetch(detailsUrl);
+        const recipe = await response.json();
+        showRecipeDetails(recipe);
+    } catch (error) {
+        console.error('Error fetching recipe details:', error);
+    }
 }
 
 function showRecipeDetails(recipe) {
@@ -69,7 +82,7 @@ function displayFavorites() {
             <img src="${recipe.image}" alt="${recipe.title}">
             <h3>${recipe.title}</h3>
         `;
-        recipeItem.addEventListener('click', () => showRecipeDetails(recipe));
+        recipeItem.addEventListener('click', () => fetchRecipeDetails(recipe.id));
         recipeList.appendChild(recipeItem);
     });
 }
