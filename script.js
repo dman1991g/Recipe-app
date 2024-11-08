@@ -3,12 +3,19 @@ const apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s=';
 // Fetch recipes based on the search query
 async function fetchRecipes(query) {
     try {
+        console.log('Searching for recipes with query:', query); // Log search query
         const response = await fetch(apiUrl + query);
         const data = await response.json();
-        console.log('Fetched recipes:', data.meals); // Check if recipes are fetched correctly
-        displayRecipes(data.meals);
+        
+        if (data.meals) {
+            console.log('Fetched recipes:', data.meals); // Log the fetched meals data
+            displayRecipes(data.meals);
+        } else {
+            alert('No recipes found for this query');
+        }
     } catch (error) {
         console.error('Error fetching recipes:', error);
+        alert('Error fetching recipes');
     }
 }
 
@@ -24,14 +31,22 @@ function displayRecipes(recipes) {
             <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
             <h3>${recipe.strMeal}</h3>
         `;
-        recipeItem.addEventListener('click', () => showRecipeDetails(recipe));
+        
+        // Log to confirm the event listener is being added
+        console.log(`Adding click listener for: ${recipe.strMeal}`);
+
+        recipeItem.addEventListener('click', () => {
+            alert(`Clicked on: ${recipe.strMeal}`); // Confirm the click event
+            showRecipeDetails(recipe);
+        });
+
         recipeList.appendChild(recipeItem);
     });
 }
 
 // Show detailed information for a clicked recipe
 function showRecipeDetails(recipe) {
-    console.log('Recipe clicked:', recipe);  // Ensure this is triggered with the correct recipe
+    console.log('Showing details for:', recipe.strMeal); // Confirm that this function is triggered
 
     const recipeDetails = document.getElementById('recipe-details');
     recipeDetails.style.display = 'block';  // Make sure the details section is visible
@@ -60,5 +75,9 @@ function showRecipeDetails(recipe) {
 document.getElementById('search-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const query = document.getElementById('search-input').value;
-    fetchRecipes(query);
+    if (query.trim() === '') {
+        alert('Please enter a search query');
+    } else {
+        fetchRecipes(query);
+    }
 });
