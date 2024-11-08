@@ -12,7 +12,7 @@ async function fetchRecipes(query) {
 
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
-    recipeList.innerHTML = '';
+    recipeList.innerHTML = ''; // Clear the list first
     recipes.forEach(recipe => {
         const recipeItem = document.createElement('div');
         recipeItem.className = 'recipe-item';
@@ -20,7 +20,7 @@ function displayRecipes(recipes) {
             <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
             <h3>${recipe.strMeal}</h3>
         `;
-        recipeItem.addEventListener('click', () => showRecipeDetails(recipe));
+        recipeItem.addEventListener('click', () => showRecipeDetails(recipe)); // Show details on click
         recipeList.appendChild(recipeItem);
     });
 }
@@ -28,14 +28,8 @@ function displayRecipes(recipes) {
 function showRecipeDetails(recipe) {
     const recipeDetails = document.getElementById('recipe-details');
     const ingredientsList = Object.keys(recipe)
-        .filter(key => key.startsWith('strIngredient') && recipe[key]) // Filter only ingredients
-        .map((key, index) => {
-            // Get the corresponding measure
-            const measureKey = `strMeasure${index + 1}`;
-            const ingredient = recipe[key];
-            const measure = recipe[measureKey] || ''; // Default to empty if no measure is found
-            return `<li>${ingredient} - ${measure}</li>`;
-        })
+        .filter(key => key.startsWith('strIngredient') && recipe[key])
+        .map(key => `<li>${recipe[key]}</li>`)
         .join('');
 
     recipeDetails.innerHTML = `
