@@ -32,8 +32,8 @@ function displayRecipes(recipes) {
             <h3>${recipe.strMeal}</h3>
         `;
         
-        // Log to confirm the event listener is being added
-        console.log(`Adding click listener for: ${recipe.strMeal}`);
+        // Check if the event listener is being added
+        console.log(`Attempting to add click listener for: ${recipe.strMeal}`);
 
         recipeItem.addEventListener('click', () => {
             alert(`Clicked on: ${recipe.strMeal}`); // Confirm the click event
