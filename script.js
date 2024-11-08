@@ -1,29 +1,57 @@
-const apiUrl = 'https://www.themealdb.com/api/json/v1/1/search.php?s=';
+// Add script load check message at the top
+document.body.innerHTML += "<p>Script Loaded Successfully!</p>";
 
-// Fetch recipes based on the search query
+// Function to display debug messages on the screen
+function showDebugMessage(message) {
+    const debugDiv = document.createElement('div');
+    debugDiv.style.background = 'yellow';
+    debugDiv.style.padding = '10px';
+    debugDiv.style.margin = '5px';
+    debugDiv.innerText = message;
+    document.body.appendChild(debugDiv);
+}
+
+// Custom alert function to simulate alerts on the screen
+function customAlert(msg) {
+    const alertDiv = document.createElement('div');
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '50%';
+    alertDiv.style.left = '50%';
+    alertDiv.style.transform = 'translate(-50%, -50%)';
+    alertDiv.style.backgroundColor = 'white';
+    alertDiv.style.border = '2px solid black';
+    alertDiv.style.padding = '20px';
+    alertDiv.style.zIndex = '1000';
+    alertDiv.innerText = msg;
+    document.body.appendChild(alertDiv);
+
+    // Remove the alert after a few seconds
+    setTimeout(() => {
+        document.body.removeChild(alertDiv);
+    }, 3000);
+}
+
+customAlert("Custom alert test: Script started");
+
+// Define your API endpoint
+const apiUrl = "https://www.themealdb.com/api/json/v1/1/search.php?s=";
+
 async function fetchRecipes(query) {
+    showDebugMessage("Starting fetchRecipes function with query: " + query);
     try {
-        console.log('Searching for recipes with query:', query); // Log search query
         const response = await fetch(apiUrl + query);
         const data = await response.json();
-        
-        if (data.meals) {
-            console.log('Fetched recipes:', data.meals); // Log the fetched meals data
-            displayRecipes(data.meals);
-        } else {
-            alert('No recipes found for this query');
-        }
+        showDebugMessage("Data fetched successfully");
+        displayRecipes(data.meals);
     } catch (error) {
-        console.error('Error fetching recipes:', error);
-        alert('Error fetching recipes');
+        customAlert('Error fetching recipes: ' + error);
     }
 }
 
-// Display recipes as clickable items
 function displayRecipes(recipes) {
+    showDebugMessage("Starting displayRecipes function");
     const recipeList = document.getElementById('recipe-list');
-    recipeList.innerHTML = '';  // Clear any previous recipes
-
+    recipeList.innerHTML = '';
     recipes.forEach(recipe => {
         const recipeItem = document.createElement('div');
         recipeItem.className = 'recipe-item';
@@ -31,53 +59,37 @@ function displayRecipes(recipes) {
             <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
             <h3>${recipe.strMeal}</h3>
         `;
-        
-        // Check if the event listener is being added
-        console.log(`Attempting to add click listener for: ${recipe.strMeal}`);
-
         recipeItem.addEventListener('click', () => {
-            alert(`Clicked on: ${recipe.strMeal}`); // Confirm the click event
+            customAlert("Recipe item clicked: " + recipe.strMeal);
             showRecipeDetails(recipe);
         });
-
         recipeList.appendChild(recipeItem);
     });
 }
 
-// Show detailed information for a clicked recipe
 function showRecipeDetails(recipe) {
-    console.log('Showing details for:', recipe.strMeal); // Confirm that this function is triggered
-
+    showDebugMessage("Starting showRecipeDetails function for recipe: " + recipe.strMeal);
     const recipeDetails = document.getElementById('recipe-details');
-    recipeDetails.style.display = 'block';  // Make sure the details section is visible
-
-    // Get ingredients dynamically by checking all ingredient fields
-    const ingredients = [];
-    for (let i = 1; i <= 20; i++) {
-        if (recipe[`strIngredient${i}`]) {
-            ingredients.push(`${recipe[`strIngredient${i}`]} - ${recipe[`strMeasure${i}`]}`);
-        }
-    }
-
     recipeDetails.innerHTML = `
         <h2>${recipe.strMeal}</h2>
         <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
-        <h3>Ingredients:</h3>
+        <h3>Ingredients</h3>
         <ul>
-            ${ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+            ${Object.keys(recipe)
+                .filter(key => key.startsWith('strIngredient') && recipe[key])
+                .map(key => `<li>${recipe[key]}</li>`)
+                .join('')}
         </ul>
-        <h3>Instructions:</h3>
+        <h3>Instructions</h3>
         <p>${recipe.strInstructions}</p>
     `;
+    customAlert("Showing details for: " + recipe.strMeal);
 }
 
-// Handle search form submission
+// Event listener for the search form
 document.getElementById('search-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const query = document.getElementById('search-input').value;
-    if (query.trim() === '') {
-        alert('Please enter a search query');
-    } else {
-        fetchRecipes(query);
-    }
+    customAlert("Search submitted with query: " + query);
+    fetchRecipes(query);
 });
