@@ -37,7 +37,7 @@ function displayRecipes(recipes) {
 
 // Fetch recipe details from Spoonacular using the recipe ID
 async function fetchRecipeDetails(recipeId) {
-    const detailsUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?';
+    const detailsUrl = `https://api.spoonacular.com/recipes/${recipeId}/information?apikey=65198bed37f2490e9ccae40a584a071e';
     try {
         const response = await fetch(detailsUrl);
         const recipe = await response.json();
