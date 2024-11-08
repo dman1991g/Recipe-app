@@ -15,7 +15,8 @@ async function fetchRecipes(query) {
 function displayRecipes(recipes) {
     const recipeList = document.getElementById('recipe-list');
     recipeList.innerHTML = '';
-    
+    document.getElementById('recipe-details').innerHTML = ''; // Clear any previous recipe details
+
     if (recipes && recipes.length > 0) {
         recipes.forEach(recipe => {
             const recipeItem = document.createElement('div');
@@ -25,18 +26,21 @@ function displayRecipes(recipes) {
                 <h3>${recipe.strMeal}</h3>
             `;
             recipeItem.addEventListener('click', () => {
-                customAlert("Clicked on recipe: " + recipe.strMeal);
                 showRecipeDetails(recipe);
             });
             recipeList.appendChild(recipeItem);
         });
+        recipeList.style.display = 'flex'; // Show the recipe list
     } else {
         customAlert("No recipes found for the given search.");
     }
 }
 
 function showRecipeDetails(recipe) {
-    customAlert("Starting showRecipeDetails function for recipe: " + recipe.strMeal);
+    customAlert("Showing details for: " + recipe.strMeal);
+
+    // Hide the recipe list
+    document.getElementById('recipe-list').style.display = 'none';
 
     // Collect ingredients
     let ingredientsList = Object.keys(recipe)
@@ -46,11 +50,11 @@ function showRecipeDetails(recipe) {
 
     if (!ingredientsList) {
         ingredientsList = "<li>No ingredients available</li>";
-        customAlert("No ingredients found for this recipe.");
     }
 
     // Recipe details HTML content
     const recipeDetailsContent = `
+        <button id="back-button">Back to Search Results</button>
         <h2>${recipe.strMeal}</h2>
         <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
         <h3>Ingredients</h3>
@@ -60,8 +64,13 @@ function showRecipeDetails(recipe) {
     `;
 
     const recipeDetails = document.getElementById('recipe-details');
-    recipeDetails.innerHTML = recipeDetailsContent;  // Update the page
-    customAlert("Showing details for: " + recipe.strMeal);
+    recipeDetails.innerHTML = recipeDetailsContent;
+
+    // Add event listener to back button
+    document.getElementById('back-button').addEventListener('click', () => {
+        recipeDetails.innerHTML = '';  // Clear recipe details
+        document.getElementById('recipe-list').style.display = 'flex';  // Show the recipe list again
+    });
 }
 
 document.getElementById('search-form').addEventListener('submit', function(e) {
