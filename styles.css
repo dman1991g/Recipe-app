@@ -51,9 +51,14 @@ header {
 @media (max-width: 600px) {
     #search-input {
         width: 100%;
-    }
+ }
+img {
+  max-width: 100%; /* Ensures the image fits within its container */
+  height: auto;    /* Maintains the aspect ratio */
+  display: block;  /* Removes extra space below the image */
+}
 
-    .recipe-item {
-        width: 100%;
-    }
+
+}
+
 }
