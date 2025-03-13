@@ -27,13 +27,22 @@ function displayRecipes(recipes) {
 
 function showRecipeDetails(recipe) {
     const recipeDetails = document.getElementById('recipe-details');
-    const ingredientsList = Object.keys(recipe)
+    const shoppingListDiv = document.getElementById('shopping-list');
+
+    // Extract ingredients
+    const ingredients = Object.keys(recipe)
         .filter(key => key.startsWith('strIngredient') && recipe[key])
-        .map(key => `<li>${recipe[key]}</li>`)
+        .map(key => recipe[key]);
+
+    // Generate ingredients list with "Add to Shopping List" buttons
+    const ingredientsList = ingredients
+        .map(ingredient => 
+            `<li>${ingredient} <button class="add-to-list" data-ingredient="${ingredient}">+</button></li>`
+        )
         .join('');
 
     recipeDetails.innerHTML = `
-        <button id="back-button">Back to Search Results</button>
+        <button id="back-button">Back</button>
         <h2>${recipe.strMeal}</h2>
         <img src="${recipe.strMealThumb}" alt="${recipe.strMeal}">
         <h3>Ingredients</h3>
@@ -43,17 +52,88 @@ function showRecipeDetails(recipe) {
     `;
 
     document.getElementById('back-button').addEventListener('click', () => {
-        document.getElementById('recipe-list').style.display = 'flex';
-        document.getElementById('recipe-details').style.display = 'none';
+        recipeDetails.style.display = 'none';
+        document.getElementById('recipe-list').style.display = 'block';
     });
 
-    // Hide recipe list and show the details
+    document.querySelectorAll('.add-to-list').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const ingredient = event.target.getAttribute('data-ingredient');
+            addToShoppingList(ingredient);
+        });
+    });
+
+    // Show recipe details and hide others
+    recipeDetails.style.display = 'block';
     document.getElementById('recipe-list').style.display = 'none';
-    document.getElementById('recipe-details').style.display = 'block';
+    shoppingListDiv.style.display = 'none';
 }
 
+// Function to add ingredients to LocalStorage shopping list
+function addToShoppingList(ingredient) {
+    let shoppingList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+    
+    if (!shoppingList.includes(ingredient)) {
+        shoppingList.push(ingredient);
+        localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+        alert(`${ingredient} added to shopping list!`);
+    } else {
+        alert(`${ingredient} is already in the shopping list.`);
+    }
+}
+
+// Function to show shopping list
+function showShoppingList() {
+    const shoppingListDiv = document.getElementById('shopping-list');
+    const recipeList = document.getElementById('recipe-list');
+    const recipeDetails = document.getElementById('recipe-details');
+
+    const shoppingList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+    
+    if (shoppingList.length === 0) {
+        shoppingListDiv.innerHTML = `<p>Your shopping list is empty.</p>`;
+    } else {
+        let listHTML = `<h2>Shopping List</h2><ul>`;
+        shoppingList.forEach((item, index) => {
+            listHTML += `<li>${item} <button class="remove-item" data-index="${index}">Remove</button></li>`;
+        });
+        listHTML += `</ul><button id="clear-list">Clear List</button>`;
+        shoppingListDiv.innerHTML = listHTML;
+
+        document.querySelectorAll('.remove-item').forEach(button => {
+            button.addEventListener('click', (event) => {
+                removeFromShoppingList(event.target.getAttribute('data-index'));
+            });
+        });
+
+        document.getElementById('clear-list').addEventListener('click', clearShoppingList);
+    }
+
+    // Show shopping list and hide others
+    shoppingListDiv.style.display = 'block';
+    recipeList.style.display = 'none';
+    recipeDetails.style.display = 'none';
+}
+
+// Function to remove an item from shopping list
+function removeFromShoppingList(index) {
+    let shoppingList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+    shoppingList.splice(index, 1);
+    localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+    showShoppingList();
+}
+
+// Function to clear the shopping list
+function clearShoppingList() {
+    localStorage.removeItem('shoppingList');
+    showShoppingList();
+}
+
+// Event listeners
 document.getElementById('search-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const query = document.getElementById('search-input').value;
     fetchRecipes(query);
 });
+
+document.getElementById('shopping-list-btn').addEventListener('click', showShoppingList);
